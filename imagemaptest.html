@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Seed Map</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f4f9f9;
+      font-family: sans-serif;
+    }
+    svg {
+      width: 100%;
+      height: 100vh;
+    }
+    .bubble {
+      fill: #a8dadc;
+      stroke: #457b9d;
+      stroke-width: 2;
+      cursor: pointer;
+      transition: fill 0.2s;
+    }
+    .bubble:hover {
+      fill: #fcbf49;
+    }
+    text {
+      font-size: 12px;
+      fill: #1d3557;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <svg viewBox="0 0 800 800">
+    <!-- Core Circle -->
+    <a href="index.html">
+      <circle class="bubble" cx="400" cy="400" r="40"/>
+      <text x="400" y="405" text-anchor="middle">Core</text>
+    </a>
+
+    <!-- 6 Surrounding Circles -->
+    <!-- Position them in a hexagon -->
+    <script>
+      const centerX = 400;
+      const centerY = 400;
+      const radius1 = 150;
+      const radius2 = 280;
+      const svg = document.querySelector("svg");
+
+      const createNode = (x, y, textLabel, link = "#") => {
+        const group = document.createElementNS("http://www.w3.org/2000/svg", "a");
+        group.setAttribute("href", link);
+
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("class", "bubble");
+        circle.setAttribute("cx", x);
+        circle.setAttribute("cy", y);
+        circle.setAttribute("r", "30");
+
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", x);
+        text.setAttribute("y", y + 4);
+        text.setAttribute("text-anchor", "middle");
+        text.textContent = textLabel;
+
+        group.appendChild(circle);
+        group.appendChild(text);
+        svg.appendChild(group);
+
+        return { x, y };
+      };
+
+      const firstLayer = [];
+      for (let i = 0; i < 6; i++) {
+        const angle = (Math.PI * 2 / 6) * i;
+        const x = centerX + radius1 * Math.cos(angle);
+        const y = centerY + radius1 * Math.sin(angle);
+        const node = createNode(x, y, "Node " + (i + 1), `#node${i + 1}`);
+        firstLayer.push(node);
+
+        // Draw connection line to center
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", centerX);
+        line.setAttribute("y1", centerY);
+        line.setAttribute("x2", x);
+        line.setAttribute("y2", y);
+        line.setAttribute("stroke", "#ccc");
+        svg.appendChild(line);
+      }
+
+      // 12 Outer Circles connected to 6 inner ones (2 per)
+      for (let i = 0; i < 12; i++) {
+        const angle = (Math.PI * 2 / 12) * i;
+        const x = centerX + radius2 * Math.cos(angle);
+        const y = centerY + radius2 * Math.sin(angle);
+        const node = createNode(x, y, "Leaf " + (i + 1), `#leaf${i + 1}`);
+
+        // Connect each to one of the first layer nodes
+        const parent = firstLayer[Math.floor(i / 2)];
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", parent.x);
+        line.setAttribute("y1", parent.y);
+        line.setAttribute("x2", x);
+        line.setAttribute("y2", y);
+        line.setAttribute("stroke", "#bbb");
+        svg.appendChild(line);
+      }
+    </script>
+  </svg>
+</body>
+</html>
+
