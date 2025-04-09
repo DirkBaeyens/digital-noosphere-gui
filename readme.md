@@ -37,7 +37,7 @@ This project may eventually grow to support:
 
 ## 📷 Preview
 
-![Visual Preview](./seed-circle.png)
+![Visual Preview](./circles.png)
 
 ## 🤝 Contributions
 
